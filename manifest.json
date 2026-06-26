@@ -1,0 +1,28 @@
+{
+  "name": "SoFIS - Solar Feasibility Intelligence System",
+  "short_name": "SoFIS",
+  "description": "Check solar feasibility for low-income households in Gainesville, Florida. Calculate energy burden, solar generation potential, and financing options.",
+  "start_url": "/sofis/",
+  "scope": "/sofis/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0D2B4E",
+  "theme_color": "#0D2B4E",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["utilities", "productivity", "education"],
+  "lang": "en-US",
+  "dir": "ltr"
+}
