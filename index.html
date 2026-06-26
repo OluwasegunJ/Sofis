@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SoFIS &mdash; Solar Feasibility Intelligence System | Gainesville, FL</title>
+<meta name="description" content="SoFIS helps low-income homeowners in Gainesville check solar feasibility, calculate energy burden, and identify the best financing structure for a rooftop solar system."/>
+<style>
+  :root {
+    --navy:   #0D2B4E;
+    --amber:  #E8971A;
+    --teal:   #1A7A8A;
+    --white:  #FFFFFF;
+    --lgray:  #F4F7FA;
+    --mgray:  #D1D9E0;
+    --dgray:  #4A5568;
+    --green:  #2D7D46;
+    --red:    #C0392B;
+    --orange: #D4681A;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--lgray); color: var(--navy); }
+
+  /* NAV */
+  nav {
+    background: var(--navy); padding: 0 24px;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 56px; position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,.25);
+  }
+  .nav-brand { display: flex; align-items: center; gap: 10px; }
+  .nav-logo  { width: 32px; height: 32px; background: var(--amber); border-radius: 6px;
+               display: flex; align-items: center; justify-content: center; font-size: 18px; }
+  .nav-title { color: var(--white); font-weight: 700; font-size: 16px; letter-spacing: .5px; }
+  .nav-sub   { color: var(--mgray); font-size: 10px; letter-spacing: 1px; }
+  .nav-badge { background: var(--amber); color: var(--navy); font-size: 10px;
+               font-weight: 700; padding: 3px 8px; border-radius: 12px; }
+
+  /* HERO */
+  .hero {
+    background: linear-gradient(135deg, var(--navy) 0%, #163a60 100%);
+    padding: 40px 24px 32px; text-align: center; position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: ''; position: absolute; top: -60px; right: -60px;
+    width: 220px; height: 220px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(232,151,26,.18) 0%, transparent 70%);
+  }
+  .hero h1 { color: var(--white); font-size: clamp(22px,4vw,32px); font-weight: 800; margin-bottom: 8px; }
+  .hero h1 span { color: var(--amber); }
+  .hero p { color: var(--mgray); font-size: 14px; max-width: 560px; margin: 0 auto 20px; line-height: 1.6; }
+  .hero-stats { display: flex; justify-content: center; gap: 28px; flex-wrap: wrap; }
+  .hstat .val { color: var(--amber); font-size: 22px; font-weight: 800; }
+  .hstat .lbl { color: var(--mgray); font-size: 11px; }
+
+  /* TABS */
+  .tabs { background: var(--white); border-bottom: 2px solid var(--mgray);
+          display: flex; overflow-x: auto; }
+  .tab { padding: 14px 20px; font-size: 13px; font-weight: 600; cursor: pointer;
+         color: var(--dgray); border-bottom: 3px solid transparent; white-space: nowrap;
+         transition: all .2s; user-select: none; }
+  .tab:hover { color: var(--navy); }
+  .tab.active { color: var(--amber); border-bottom-color: var(--amber); }
+
+  /* MAIN */
+  .main { max-width: 1000px; margin: 0 auto; padding: 24px 16px 60px; }
+
+  /* PANEL */
+  .panel { background: var(--white); border-radius: 10px;
+           box-shadow: 0 2px 10px rgba(0,0,0,.07); margin-bottom: 20px; overflow: hidden; }
+  .panel-head { padding: 16px 20px; border-bottom: 1px solid var(--mgray);
+                display: flex; align-items: center; gap: 10px; }
+  .panel-icon  { width: 32px; height: 32px; border-radius: 8px; background: var(--navy);
+                 display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+  .panel-title { font-size: 15px; font-weight: 700; color: var(--navy); }
+  .panel-sub   { font-size: 12px; color: var(--dgray); }
+  .panel-body  { padding: 20px; }
+
+  /* FORM */
+  .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); gap: 14px; }
+  label { display: block; font-size: 12px; font-weight: 600; color: var(--dgray); margin-bottom: 5px; letter-spacing: .3px; }
+  input, select {
+    width: 100%; padding: 10px 12px; border: 1.5px solid var(--mgray);
+    border-radius: 7px; font-size: 14px; color: var(--navy); background: var(--lgray);
+    transition: border-color .2s;
+  }
+  input:focus, select:focus { outline: none; border-color: var(--amber); background: var(--white); }
+  .input-hint { font-size: 11px; color: var(--dgray); margin-top: 4px; }
+
+  /* BUTTONS */
+  .btn-primary {
+    background: var(--amber); color: var(--navy); border: none;
+    padding: 12px 28px; border-radius: 8px; font-size: 14px; font-weight: 700;
+    cursor: pointer; transition: transform .15s, box-shadow .15s; margin-top: 16px;
+  }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(232,151,26,.35); }
+
+  /* STAT CARDS */
+  .stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px,1fr)); gap: 12px; margin-bottom: 20px; }
+  .stat-card { background: var(--lgray); border-radius: 8px; padding: 14px 12px;
+               text-align: center; border: 1.5px solid var(--mgray); }
+  .stat-card .sv { font-size: 26px; font-weight: 800; }
+  .stat-card .sl { font-size: 11px; color: var(--dgray); margin-top: 3px; }
+  .stat-card.highlight { background: var(--navy); border-color: var(--navy); }
+  .stat-card.highlight .sv { color: var(--amber); }
+  .stat-card.highlight .sl { color: var(--mgray); }
+  .stat-card.good .sv { color: var(--green); }
+  .stat-card.warn .sv { color: var(--orange); }
+
+  /* COMPARE */
+  .compare-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px; }
+  .compare-card { border-radius: 8px; padding: 16px; }
+  .compare-card.pvw { background: #f0fff4; border: 1.5px solid var(--green); }
+  .compare-card.sun { background: #fff8f0; border: 1.5px solid var(--teal); }
+  .compare-card h4  { font-size: 11px; font-weight: 700; letter-spacing: .5px; margin-bottom: 10px; }
+  .compare-card.pvw h4 { color: var(--green); }
+  .compare-card.sun h4 { color: var(--teal); }
+  .compare-card .cv  { font-size: 28px; font-weight: 800; }
+  .compare-card.pvw .cv { color: var(--green); }
+  .compare-card.sun .cv { color: var(--teal); }
+  .compare-card .cl  { font-size: 11px; color: var(--dgray); }
+  .mini-stats { display: flex; gap: 12px; margin-top: 10px; flex-wrap: wrap; }
+  .mini-stat .mv { font-size: 15px; font-weight: 700; }
+  .mini-stat .ml { font-size: 10px; color: var(--dgray); }
+
+  /* PROGRESS */
+  .prog-wrap { margin: 8px 0; }
+  .prog-label { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px; }
+  .prog-bar  { height: 10px; background: var(--mgray); border-radius: 5px; overflow: hidden; }
+  .prog-fill { height: 100%; border-radius: 5px; transition: width .6s ease; }
+
+  /* BURDEN */
+  .burden-meter { padding: 14px; background: var(--lgray); border-radius: 8px; margin-bottom: 14px; }
+  .burden-scale { display: flex; height: 8px; border-radius: 4px; overflow: hidden; margin: 8px 0; }
+  .burden-scale .sg { flex: 6; background: var(--green); }
+  .burden-scale .so { flex: 4; background: var(--orange); }
+  .burden-scale .sr { flex: 3; background: var(--red); }
+  .burden-pointer { position: relative; height: 14px; }
+  .burden-arrow { position: absolute; width: 2px; height: 14px; background: var(--navy);
+                  border-radius: 1px; transform: translateX(-50%); transition: left .6s ease; }
+
+  /* INFO BOXES */
+  .info-box { background: #e8f4fd; border-left: 4px solid var(--teal);
+              padding: 12px 14px; border-radius: 0 8px 8px 0;
+              font-size: 13px; line-height: 1.6; margin-bottom: 14px; }
+  .warn-box { background: #fff8e1; border-left: 4px solid var(--amber);
+              padding: 12px 14px; border-radius: 0 8px 8px 0;
+              font-size: 13px; line-height: 1.6; }
+
+  /* FINANCING TABLE */
+  .fin-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .fin-table th { background: var(--navy); color: var(--white);
+                  padding: 10px 12px; text-align: left; font-size: 11px; letter-spacing: .3px; }
+  .fin-table td { padding: 11px 12px; border-bottom: 1px solid var(--mgray); }
+  .fin-table tr:last-child td { border-bottom: none; }
+  .fin-table tr.good-row td { background: #f0fff4; }
+  .fin-table tr.warn-row td { background: #fffbf0; }
+  .fin-table tr.bad-row  td { background: #fff5f5; }
+  .badge { display: inline-flex; align-items: center; padding: 3px 8px;
+           border-radius: 12px; font-size: 11px; font-weight: 700; }
+  .badge.yes  { background: #d4edda; color: var(--green); }
+  .badge.no   { background: #f8d7da; color: var(--red); }
+  .badge.part { background: #fff3cd; color: var(--orange); }
+  .pos { color: var(--green); font-weight: 700; }
+  .neg { color: var(--red);   font-weight: 700; }
+  .term-warn { color: var(--red); font-weight: 700; }
+
+  /* STEPS */
+  .step-list { list-style: none; }
+  .step-list li { display: flex; gap: 14px; margin-bottom: 20px; }
+  .step-num { width: 32px; height: 32px; background: var(--amber); color: var(--navy);
+              border-radius: 50%; display: flex; align-items: center; justify-content: center;
+              font-weight: 800; font-size: 14px; flex-shrink: 0; }
+  .step-content h4 { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+  .step-content p  { font-size: 13px; color: var(--dgray); line-height: 1.6; }
+
+  /* ABOUT */
+  .about-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); gap: 14px; }
+  .about-card { background: var(--lgray); border-radius: 8px; padding: 16px; border: 1.5px solid var(--mgray); }
+  .about-card h4 { font-size: 13px; font-weight: 700; margin-bottom: 6px; }
+  .about-card p  { font-size: 12px; color: var(--dgray); line-height: 1.6; }
+
+  /* FOOTER */
+  footer { background: var(--navy); color: var(--mgray); text-align: center;
+           padding: 20px; font-size: 12px; line-height: 1.8; }
+  footer span { color: var(--amber); }
+
+  .hidden { display: none !important; }
+
+  /* DOWNLOAD BUTTON */
+  .btn-download {
+    background: var(--navy); color: var(--white); border: none;
+    padding: 12px 28px; border-radius: 8px; font-size: 14px; font-weight: 700;
+    cursor: pointer; transition: transform .15s, box-shadow .15s;
+    display: inline-flex; align-items: center; gap: 8px; margin-top: 12px;
+  }
+  .btn-download:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(13,43,78,.3); }
+
+  /* PRINT STYLES */
+  @media print {
+    nav, .tabs, .btn-primary, .btn-download, footer { display: none !important; }
+    body { background: white; }
+    .panel { box-shadow: none; border: 1px solid #ccc; page-break-inside: avoid; }
+    .hidden { display: block !important; }
+    #tab-assess, #tab-results, #tab-financing { display: block !important; }
+    #tab-method, #tab-about { display: none !important; }
+    .print-header { display: block !important; }
+  }
+  .print-header { display: none; text-align: center; margin-bottom: 20px; }
+  .print-header h2 { font-size: 20px; color: var(--navy); }
+  .print-header p  { font-size: 13px; color: var(--dgray); }
+
+  @media (max-width: 600px) {
+    .compare-row { grid-template-columns: 1fr; }
+    .fin-table { font-size: 11px; }
+    .fin-table th, .fin-table td { padding: 8px 6px; }
+    .hero-stats { gap: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-brand">
+    <div class="nav-logo">&#9728;</div>
+    <div>
+      <div class="nav-title">SoFIS</div>
+      <div class="nav-sub">SOLAR FEASIBILITY INTELLIGENCE SYSTEM</div>
+    </div>
+  </div>
+  <div class="nav-badge">GAINESVILLE, FL</div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <h1>Is Solar <span>Feasible</span> for Your Home?</h1>
+  <p>Enter your electricity details and SoFIS calculates your solar generation potential, energy burden status, and which financing structures produce immediate monthly savings.</p>
+  <div class="hero-stats">
+    <div class="hstat"><div class="val">62%</div><div class="lbl">avg demand offset</div></div>
+    <div class="hstat"><div class="val">$10K</div><div class="lbl">CDFI capital limit</div></div>
+    <div class="hstat"><div class="val">3.6 kW</div><div class="lbl">system size</div></div>
+    <div class="hstat"><div class="val">2</div><div class="lbl">viable financing paths</div></div>
+  </div>
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+  <div class="tab active" onclick="showTab('assess',this)">&#127968; My Assessment</div>
+  <div class="tab" onclick="showTab('results',this)">&#9728; Solar Results</div>
+  <div class="tab" onclick="showTab('financing',this)">&#128176; Financing</div>
+  <div class="tab" onclick="showTab('method',this)">&#128203; Methodology</div>
+  <div class="tab" onclick="showTab('about',this)">&#8505; About SoFIS</div>
+</div>
+
+<div class="main">
+<div class="print-header">
+  <h2>&#9728; SoFIS &mdash; Solar Feasibility Report</h2>
+  <p>Solar Feasibility Intelligence System | University of Florida, 2026</p>
+  <p id="print-for-line">Generated for: <span id="print-name-area">Gainesville Household</span></p>
+</div>
+
+<!-- TAB 1: ASSESSMENT -->
+<div id="tab-assess">
+  <div class="panel">
+    <div class="panel-head">
+      <div class="panel-icon">&#127968;</div>
+      <div>
+        <div class="panel-title">Household Energy Profile</div>
+        <div class="panel-sub">Enter your details to begin the feasibility assessment</div>
+      </div>
+    </div>
+    <div class="panel-body">
+      <div class="form-grid">
+        <div style="grid-column:1/-1;">
+          <label>Your Name (optional &mdash; appears on your report)</label>
+          <input type="text" id="user-name" placeholder="e.g. James O."/>
+          <div class="input-hint">Only used to personalise your downloaded report</div>
+        </div>
+        <div>
+          <label>Monthly Electricity Bill ($)</label>
+          <input type="number" id="monthly-bill" placeholder="e.g. 99" min="10" max="500" value="99"/>
+          <div class="input-hint">Check your GRU bill or utility statement</div>
+        </div>
+        <div>
+          <label>Monthly Consumption (kWh) &mdash; optional</label>
+          <input type="number" id="monthly-kwh" placeholder="e.g. 711" min="50" max="2000"/>
+          <div class="input-hint">Leave blank to estimate from bill amount</div>
+        </div>
+        <div>
+          <label>Annual Household Income ($)</label>
+          <input type="number" id="annual-income" placeholder="e.g. 25000" min="5000" max="150000"/>
+          <div class="input-hint">Used to calculate your energy burden percentage</div>
+        </div>
+        <div>
+          <label>Neighborhood / Area (optional)</label>
+          <input type="text" id="neighborhood" placeholder="e.g. NE Gainesville, Eastside"/>
+          <div class="input-hint">Used to personalise your report &mdash; any Gainesville address is supported</div>
+        </div>
+        <div>
+          <label>Homeowner Status</label>
+          <select id="owner-status">
+            <option value="owner">Owner-occupied (recommended)</option>
+            <option value="renter">Renter</option>
+            <option value="unknown">Not sure</option>
+          </select>
+          <div class="input-hint">Solar financing programs primarily target owner-occupied homes</div>
+        </div>
+      </div>
+      <button class="btn-primary" onclick="runAssessment()">Run Solar Assessment &#8594;</button>
+    </div>
+  </div>
+
+  <div id="burden-result" class="panel hidden">
+    <div class="panel-head">
+      <div class="panel-icon">&#9889;</div>
+      <div>
+        <div class="panel-title">Your Energy Burden</div>
+        <div class="panel-sub">Annual electricity cost as a percentage of household income</div>
+      </div>
+    </div>
+    <div class="panel-body">
+      <div class="burden-meter">
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+          <span style="font-size:13px;font-weight:600;">Your burden:</span>
+          <span id="burden-pct-label" style="font-size:20px;font-weight:800;"></span>
+        </div>
+        <div class="burden-scale">
+          <div class="sg"></div>
+          <div class="so"></div>
+          <div class="sr"></div>
+        </div>
+        <div class="burden-pointer">
+          <div class="burden-arrow" id="burden-arrow" style="left:20%"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--dgray);margin-top:4px;">
+          <span>0%</span><span>6% burdened</span><span>10% severely</span><span>13%+</span>
+        </div>
+      </div>
+      <div id="burden-message" class="info-box"></div>
+    </div>
+  </div>
+</div>
+
+<!-- TAB 2: SOLAR RESULTS -->
+<div id="tab-results" class="hidden">
+  <div id="no-results-msg" class="warn-box" style="margin-bottom:20px;">
+    &#9888; Complete your household assessment on the first tab to see solar results.
+  </div>
+  <div id="solar-results-content" class="hidden">
+    <div class="stat-row">
+      <div class="stat-card highlight">
+        <div class="sv" id="sr-pvkwh">5,291</div>
+        <div class="sl">kWh/yr &mdash; PVWatts</div>
+      </div>
+      <div class="stat-card good">
+        <div class="sv" id="sr-pvoffset">62.0%</div>
+        <div class="sl">demand offset (PVWatts)</div>
+      </div>
+      <div class="stat-card">
+        <div class="sv" id="sr-srkwh">3,815</div>
+        <div class="sl">kWh/yr &mdash; Sunroof est.</div>
+      </div>
+      <div class="stat-card warn">
+        <div class="sv" id="sr-sroffset">44.7%</div>
+        <div class="sl">demand offset (Sunroof)</div>
+      </div>
+    </div>
+    <div class="compare-row">
+      <div class="compare-card pvw">
+        <h4>NREL PVWATTS &mdash; PRIMARY METHOD</h4>
+        <div class="cv" id="sr-pvsavings">$61.73</div>
+        <div class="cl">monthly savings</div>
+        <div class="mini-stats">
+          <div class="mini-stat"><div class="mv" id="sr-pvannual">$741</div><div class="ml">annual savings</div></div>
+          <div class="mini-stat"><div class="mv">0.8%</div><div class="ml">coeff. of variation</div></div>
+        </div>
+      </div>
+      <div class="compare-card sun">
+        <h4>GOOGLE SUNROOF &mdash; CONSERVATIVE REFERENCE</h4>
+        <div class="cv" id="sr-srsavings">$44.51</div>
+        <div class="cl">monthly savings (implied)</div>
+        <div class="mini-stats">
+          <div class="mini-stat"><div class="mv" id="sr-srannual">$534</div><div class="ml">annual savings</div></div>
+          <div class="mini-stat"><div class="mv">28%</div><div class="ml">gap vs PVWatts</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-icon">&#128202;</div>
+        <div>
+          <div class="panel-title">Demand vs Solar Offset</div>
+          <div class="panel-sub">How much of your electricity demand the system covers</div>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div class="prog-wrap">
+          <div class="prog-label"><span>Annual demand</span><span id="sr-demand-label">8,532 kWh</span></div>
+          <div class="prog-bar"><div class="prog-fill" style="width:100%;background:var(--mgray)"></div></div>
+        </div>
+        <div class="prog-wrap">
+          <div class="prog-label"><span>PVWatts offset</span><span id="sr-pv-bar-label">62.0%</span></div>
+          <div class="prog-bar"><div class="prog-fill" id="pv-bar" style="width:62%;background:var(--green)"></div></div>
+        </div>
+        <div class="prog-wrap">
+          <div class="prog-label"><span>Sunroof offset</span><span id="sr-sr-bar-label">44.7%</span></div>
+          <div class="prog-bar"><div class="prog-fill" id="sr-bar" style="width:44.7%;background:var(--teal)"></div></div>
+        </div>
+        <div class="info-box" style="margin-top:16px;">
+          <strong>Why two estimates?</strong> PVWatts is the idealized upper bound assuming clean panels and optimal conditions. Sunroof captures real site-level tree shading but tends to be conservative. Actual system performance likely falls between the two. Both are shown throughout to bracket the realistic range.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TAB 3: FINANCING -->
+<div id="tab-financing" class="hidden">
+  <div id="no-fin-msg" class="warn-box" style="margin-bottom:20px;">
+    &#9888; Complete your household assessment on the first tab to see financing results.
+  </div>
+  <div id="fin-content" class="hidden">
+    <div class="info-box" style="margin-bottom:16px;">
+      <strong>Key Finding:</strong> Loan <em>term</em> matters more than interest <em>rate</em>. Both 7-year scenarios fail because monthly payments exceed electricity savings. Two 30-year scenarios are positive under both methods.
+    </div>
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-icon">&#128176;</div>
+        <div>
+          <div class="panel-title">Five Financing Scenarios</div>
+          <div class="panel-sub">$10,000 loan &mdash; net monthly cash flow = savings minus loan payment</div>
+        </div>
+      </div>
+      <div class="panel-body" style="overflow-x:auto;">
+        <table class="fin-table">
+          <thead>
+            <tr>
+              <th>Scenario</th><th>Rate</th><th>Term</th>
+              <th>Payment</th><th>Net (PVWatts)</th><th>Net (Sunroof)</th><th>Both +?</th>
+            </tr>
+          </thead>
+          <tbody id="fin-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-icon">&#9989;</div>
+        <div>
+          <div class="panel-title">Recommendation</div>
+          <div class="panel-sub">Best financing path for your consumption profile</div>
+        </div>
+      </div>
+      <div class="panel-body" id="fin-recommendation"></div>
+    </div>
+
+    <div style="text-align:center;padding:8px 0 20px;">
+      <button class="btn-download" onclick="downloadReport()">
+        &#128196; Download My Solar Report (PDF)
+      </button>
+      <div style="font-size:11px;color:var(--dgray);margin-top:8px;">
+        Saves a complete summary of your assessment, solar results, and financing analysis
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- TAB 4: METHODOLOGY -->
+<div id="tab-method" class="hidden">
+  <div class="panel">
+    <div class="panel-head">
+      <div class="panel-icon">&#128203;</div>
+      <div>
+        <div class="panel-title">How SoFIS Works</div>
+        <div class="panel-sub">The analytical process from data to recommendation</div>
+      </div>
+    </div>
+    <div class="panel-body">
+      <ul class="step-list">
+        <li>
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <h4>Household Energy Baseline</h4>
+            <p>Your monthly consumption (kWh) is estimated from your bill at the GRU residential rate of $0.14/kWh. Annual demand = monthly kWh x 12. This becomes the denominator for all offset calculations.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <h4>Energy Burden Calculation</h4>
+            <p>Energy burden = annual electricity cost divided by annual household income. HUD defines energy burdened as above 6% and severely burdened as above 10%. Low-income Gainesville households consume 35.6% less than the Florida statewide average. Burden is income-driven, not consumption-driven.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <h4>NREL PVWatts Solar Generation (Primary)</h4>
+            <p>The $10,000 capital constraint divided by NREL Q1 2024 benchmark of $2.74/W gives a 3.6 kW system (9 panels, 195 sq ft). PVWatts was run at 9 verified NE Gainesville addresses and returned a mean of 5,291 kWh/yr (62.0% offset). This is the primary, NREL-validated estimate.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-num">4</div>
+          <div class="step-content">
+            <h4>Google Sunroof Conservative Reference</h4>
+            <p>Implied generation = usable sunlight hours x 3.6 kW x 0.80 performance ratio. Mean result: 3,815 kWh/yr (44.7%). The 28% gap between PVWatts and Sunroof reflects site-specific tree shading. Real performance falls between the two estimates.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-num">5</div>
+          <div class="step-content">
+            <h4>Financing Scenario Analysis</h4>
+            <p>Monthly payment M = P[r(1+r)^n] / [(1+r)^n - 1] where P = $10,000. Net cash flow = monthly savings minus monthly payment. Five scenarios are tested from market-rate mortgages to community revolving loan funds, across 7-year and 30-year terms.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-num">6</div>
+          <div class="step-content">
+            <h4>Lifecycle Cost Considerations</h4>
+            <p>Over a 30-year loan term, households should plan for: panel cleaning (3-4 times/year, community volunteer programs recommended), inverter replacement (typically once or twice at years 10-15), and roof replacement (solar adds panel removal and reinstall cost when insurance requires re-roofing).</p>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- TAB 5: ABOUT -->
+<div id="tab-about" class="hidden">
+  <div class="panel">
+    <div class="panel-head">
+      <div class="panel-icon">&#8505;</div>
+      <div>
+        <div class="panel-title">About SoFIS</div>
+        <div class="panel-sub">Solar Feasibility Intelligence System &mdash; University of Florida, 2026</div>
+      </div>
+    </div>
+    <div class="panel-body">
+      <div class="info-box" style="margin-bottom:20px;">
+        SoFIS is a project deliverable of the Master of Science in Integrated Sustainable Development program at the University of Florida. It operationalizes the solar feasibility methodology for low-income owner-occupied housing in Gainesville, Florida for planners, community development practitioners, and homeowners.
+      </div>
+      <div class="about-grid">
+        <div class="about-card">
+          <h4>&#9728; Researcher</h4>
+          <p>Oluwasegun Joel James<br/>MSc Integrated Sustainable Development<br/>University of Florida, 2026<br/>University of Florida, 2026</p>
+        </div>
+        <div class="about-card">
+          <h4>&#127979; Advisory Committee</h4>
+          <p>Dr. Patricia Kio (Chair)<br/>Dr. Hal Knowles (Co-Chair)<br/>Dept. of Urban and Regional Planning<br/>University of Florida</p>
+        </div>
+        <div class="about-card">
+          <h4>&#128202; Data Sources</h4>
+          <p>GRU Billing Records (Aug-Dec 2021)<br/>ACS 2023 5-Year Estimates<br/>NREL PVWatts Calculator<br/>Google Project Sunroof<br/>FDOR Cadastral Parcel Data</p>
+        </div>
+
+        <div class="about-card">
+          <h4>&#9888; Limitations</h4>
+          <p>Owner-occupied housing only. GRU data covers Aug-Dec 2021. $10,000 CDFI capital constraint assumed. Student rental housing excluded. Results specific to Gainesville, FL (IECC Climate Zone 2A).</p>
+        </div>
+        <div class="about-card">
+          <h4>&#128218; Key References</h4>
+          <p>Forrester et al. (2024) &mdash; Nature Communications<br/>Heeter et al. (2021) &mdash; NREL<br/>Basore et al. (2025) &mdash; NREL<br/>Feldman et al. (2021) &mdash; NREL<br/>Solar Energy Loan Fund (2023)</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /main -->
+
+<footer>
+  <strong><span>SoFIS</span> &mdash; Solar Feasibility Intelligence System</strong><br/>
+  Project deliverable &mdash; University of Florida, 2026<br/>
+  Oluwasegun Joel James &mdash; Master of Science in Integrated Sustainable Development<br/>
+  <span>This tool is for informational purposes only. Consult a licensed solar installer and CDFI for program eligibility.</span>
+</footer>
+
+<script>
+// ── CONSTANTS ──
+const GRU_RATE    = 0.14;
+const PVWATTS_KWH = 5291;
+const SUNROOF_KWH = 3815;
+const LOAN_AMT    = 10000;
+
+const SCENARIOS = [
+  { name: 'Sc 1: Market Mortgage',         rate: 0.06, years: 30, rl: '6%', tl: '30 yr' },
+  { name: 'Sc 2: Habitat Mortgage',         rate: 0.03, years: 30, rl: '3%', tl: '30 yr' },
+  { name: 'Sc 3: Market Solar Loan',        rate: 0.06, years:  7, rl: '6%', tl: '7 yr'  },
+  { name: 'Sc 4: Revolving Fund 7-yr',      rate: 0.02, years:  7, rl: '2%', tl: '7 yr'  },
+  { name: 'Sc 5: Revolving Fund 30-yr',     rate: 0.02, years: 30, rl: '2%', tl: '30 yr' },
+];
+
+function monthlyPayment(P, annualRate, years) {
+  if (annualRate === 0) return P / (years * 12);
+  const r = annualRate / 12, n = years * 12;
+  return P * (r * Math.pow(1+r,n)) / (Math.pow(1+r,n) - 1);
+}
+
+// ── TAB SWITCHING ──
+function showTab(name, el) {
+  document.querySelectorAll('[id^="tab-"]').forEach(t => t.classList.add('hidden'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.remove('hidden');
+  if (el) el.classList.add('active');
+}
+
+// ── MAIN ASSESSMENT ──
+function runAssessment() {
+  const bill   = parseFloat(document.getElementById('monthly-bill').value)  || 99;
+  const kwhIn  = parseFloat(document.getElementById('monthly-kwh').value);
+  const income = parseFloat(document.getElementById('annual-income').value);
+
+  const monthlyKwh = kwhIn > 0 ? kwhIn : bill / GRU_RATE;
+  const annualDemand = monthlyKwh * 12;
+  const scale = Math.min(annualDemand / 8532, 1.5);
+
+  const pvKwh  = Math.round(PVWATTS_KWH * scale);
+  const srKwh  = Math.round(SUNROOF_KWH * scale);
+  const pvSavMo = (pvKwh / 12) * GRU_RATE;
+  const srSavMo = (srKwh / 12) * GRU_RATE;
+  const pvOff  = Math.min((pvKwh / annualDemand) * 100, 100).toFixed(1);
+  const srOff  = Math.min((srKwh / annualDemand) * 100, 100).toFixed(1);
+
+  // Energy burden
+  if (income > 0) {
+    const annualCost = annualDemand * GRU_RATE;
+    const burden = (annualCost / income) * 100;
+    document.getElementById('burden-result').classList.remove('hidden');
+    const bLabel = document.getElementById('burden-pct-label');
+    bLabel.textContent = burden.toFixed(2) + '%';
+    bLabel.style.color = burden >= 10 ? 'var(--red)' : burden >= 6 ? 'var(--orange)' : 'var(--green)';
+    const pos = Math.min((burden / 13) * 100, 100);
+    document.getElementById('burden-arrow').style.left = pos + '%';
+    let msg = '';
+    if (burden >= 10) {
+      msg = '<strong style="color:var(--red)">Severely Energy Burdened (' + burden.toFixed(1) + '%)</strong> &mdash; Above the HUD 10% severe threshold. Solar investment is a high priority. The 3.6 kW system would save approximately <strong>$' + (pvSavMo*12).toFixed(0) + '/year</strong> under the PVWatts estimate.';
+    } else if (burden >= 6) {
+      msg = '<strong style="color:var(--orange)">Energy Burdened (' + burden.toFixed(1) + '%)</strong> &mdash; Above the HUD 6% threshold. Solar investment is recommended to reduce this burden.';
+    } else {
+      msg = '<strong style="color:var(--green)">Below HUD Threshold (' + burden.toFixed(1) + '%)</strong> &mdash; Solar investment would still produce positive monthly cash flow under the right financing structure.';
+    }
+    document.getElementById('burden-message').innerHTML = msg;
+  }
+
+  // Solar results
+  document.getElementById('sr-pvkwh').textContent     = pvKwh.toLocaleString();
+  document.getElementById('sr-pvoffset').textContent  = pvOff + '%';
+  document.getElementById('sr-srkwh').textContent     = srKwh.toLocaleString();
+  document.getElementById('sr-sroffset').textContent  = srOff + '%';
+  document.getElementById('sr-pvsavings').textContent = '$' + pvSavMo.toFixed(2);
+  document.getElementById('sr-srsavings').textContent = '$' + srSavMo.toFixed(2);
+  document.getElementById('sr-pvannual').textContent  = '$' + (pvSavMo*12).toFixed(0);
+  document.getElementById('sr-srannual').textContent  = '$' + (srSavMo*12).toFixed(0);
+  document.getElementById('sr-demand-label').textContent   = Math.round(annualDemand).toLocaleString() + ' kWh';
+  document.getElementById('sr-pv-bar-label').textContent   = pvOff + '%';
+  document.getElementById('sr-sr-bar-label').textContent   = srOff + '%';
+  document.getElementById('pv-bar').style.width = Math.min(pvOff, 100) + '%';
+  document.getElementById('sr-bar').style.width = Math.min(srOff, 100) + '%';
+  document.getElementById('no-results-msg').classList.add('hidden');
+  document.getElementById('solar-results-content').classList.remove('hidden');
+
+  // Financing
+  const tbody = document.getElementById('fin-tbody');
+  tbody.innerHTML = '';
+  let bestRec = null;
+  SCENARIOS.forEach(sc => {
+    const pmt   = monthlyPayment(LOAN_AMT, sc.rate, sc.years);
+    const netPV = pvSavMo - pmt;
+    const netSR = srSavMo - pmt;
+    const both  = netPV > 0 && netSR > 0;
+    const pvPos = netPV > 0;
+    const is7yr = sc.years === 7;
+    if (both && !bestRec) bestRec = { ...sc, pmt, netPV, netSR };
+    const rc    = both ? 'good-row' : pvPos ? 'warn-row' : 'bad-row';
+    const badge = both
+      ? '<span class="badge yes">YES</span>'
+      : pvPos
+        ? '<span class="badge part">PV only</span>'
+        : '<span class="badge no">NO</span>';
+    tbody.innerHTML += `<tr class="${rc}">
+      <td><strong>${sc.name}</strong></td>
+      <td>${sc.rl}</td>
+      <td class="${is7yr?'term-warn':''}">${sc.tl}${is7yr?' &#9888;':''}</td>
+      <td>$${pmt.toFixed(2)}</td>
+      <td class="${netPV>=0?'pos':'neg'}">${netPV>=0?'+':''}$${Math.abs(netPV).toFixed(2)}</td>
+      <td class="${netSR>=0?'pos':'neg'}">${netSR>=0?'+':''}$${Math.abs(netSR).toFixed(2)}</td>
+      <td>${badge}</td>
+    </tr>`;
+  });
+
+  const recDiv = document.getElementById('fin-recommendation');
+  if (bestRec) {
+    recDiv.innerHTML = `
+      <div style="background:#f0fff4;border-radius:8px;padding:16px;border:1.5px solid var(--green);margin-bottom:14px;">
+        <div style="font-size:12px;font-weight:700;color:var(--green);margin-bottom:10px;letter-spacing:.5px;">BEST SCENARIO: ${bestRec.name}</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:12px;">
+          <div><div style="font-size:22px;font-weight:800;color:var(--green);">+$${bestRec.netPV.toFixed(2)}</div><div style="font-size:11px;color:var(--dgray)">net/month (PVWatts)</div></div>
+          <div><div style="font-size:22px;font-weight:800;color:var(--teal);">+$${bestRec.netSR.toFixed(2)}</div><div style="font-size:11px;color:var(--dgray)">net/month (Sunroof)</div></div>
+          <div><div style="font-size:22px;font-weight:800;color:var(--navy);">$${bestRec.pmt.toFixed(2)}</div><div style="font-size:11px;color:var(--dgray)">monthly payment</div></div>
+          <div><div style="font-size:22px;font-weight:800;color:var(--amber);">${bestRec.rl} / ${bestRec.years}yr</div><div style="font-size:11px;color:var(--dgray)">rate and term</div></div>
+        </div>
+        <div style="font-size:13px;color:var(--dgray);line-height:1.6;">This scenario produces immediate positive cash flow under both generation estimates. Contact the <strong>Solar and Energy Loan Fund (SELF)</strong> or <strong>Habitat for Humanity of Alachua County</strong> to explore eligibility for mission-driven 30-year financing.</div>
+      </div>
+      <div class="info-box">
+        <strong>Long-term considerations:</strong> Budget for panel cleaning (3-4x/year), inverter replacement (around years 10-15), and roof-related costs. Community volunteer programs can help keep maintenance costs from reducing your net savings.
+      </div>`;
+  } else {
+    recDiv.innerHTML = `<div class="warn-box">No scenario produces positive cash flow under both methods at your consumption level. Contact a CDFI for custom program options or explore whether a lower loan amount is achievable.</div>`;
+  }
+
+  // Renter warning
+  const ownerStatus = document.getElementById('owner-status').value;
+  if (ownerStatus === 'renter') {
+    document.getElementById('fin-recommendation').innerHTML = '<div class="warn-box"><strong>Note for Renters:</strong> Solar financing programs primarily target owner-occupied housing. If you rent, speak to your landlord about solar installation, or explore community solar subscription programs that allow renters to benefit from solar without rooftop installation.</div>' + document.getElementById('fin-recommendation').innerHTML;
+  }
+  document.getElementById('no-fin-msg').classList.add('hidden');
+  document.getElementById('fin-content').classList.remove('hidden');
+
+  // Switch to results tab
+  showTab('results', document.querySelectorAll('.tab')[1]);
+}
+
+// ── DOWNLOAD REPORT ──
+function downloadReport() {
+  var name = document.getElementById('user-name') ? document.getElementById('user-name').value : '';
+  var hood = document.getElementById('neighborhood') ? document.getElementById('neighborhood').value : 'Gainesville, FL';
+  var nameArea = document.getElementById('print-name-area');
+  if (nameArea) {
+    nameArea.textContent = (name ? name + ' | ' : '') + (hood || 'Gainesville, FL');
+  }
+  var now = new Date();
+  var dateStr = now.toLocaleDateString('en-US', {year:'numeric', month:'long', day:'numeric'});
+  var printLines = document.querySelectorAll('.print-header p');
+  if (printLines.length > 0) {
+    printLines[printLines.length - 1].textContent = 'Generated: ' + dateStr;
+  }
+  window.print();
+}
+
+</script>
+</body>
+</html>
